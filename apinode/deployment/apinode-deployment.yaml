@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apinode
+  namespace: dis-obj-storage
+  labels:
+    app: apinode
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: apinode
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: apinode
+    spec:
+      containers:
+        - name: apinode
+          # 镜像拉去策略，总是拉取最新的镜像
+          imagePullPolicy: Always
+          image: huyongqi/apinodeserver:1.0.0-alpha1.2
+          ports:
+            - containerPort: 6000
+              name: naddr-31600
+              protocol: TCP
+          # 定义资源限制
+          resources: { }
+          env:
+            - name: POD_NAMESPACE # 配置映射环境变量
+              valueFrom:
+                fieldRef: # 还有通过secretKeyRef、configMapKeyRef引用变量
+                  fieldPath: metadata.namespace
+            - name: NODE_ADDR #节点地址[na]
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP # status字段是由Kubernetes控制平面负责维护和更新的
+            - name: NODE_PORT #节点端口[napt]
+              value: "6000"
+            - name: CLUSTER_ADDRS #METADATA地址[使用metanode service名称]
+              value: "metanode"
+            - name: CLUSTER_ADDRS_PORT #METADATA端口
+              value: "3000"  ####需要参考metanode-deployment.yaml#naddr-30000
+            - name: DS #数据分片大小数量
+              value: "2"
+            - name: PS #奇偶校验数量
+              value: "1"
+      dnsPolicy: ClusterFirst # 容器首先尝试使用集群内部的DNS服务进行域名解析，如果解析失败，再使用节点的DNS服务进行解析
+      restartPolicy: Always # 指定了当容器退出时的重启策略。Always表示容器将一直被重启，无论退出的原因是什么
+      schedulerName: default-scheduler # 指定了分配Pod的调度器名称。在这个示例中，Pod将使用名为default-scheduler的调度器进行调度
+      securityContext: { } # 定义了容器的安全上下文配置，这些配置将被应用到容器运行时，以提供额外的安全特性
+      terminationGracePeriodSeconds: 30 # 指定了容器终止的优雅期限，即容器接收到终止信号后的等待时间。在这个示例中，容器将有30秒的优雅终止期限，如果在这个时间到期之前，Pod还没有终止，Kubernetes将强制终止该Pod
+      serviceAccount: my-service-account
+      serviceAccountName: my-service-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dis-obj-storage
+  name: apinode
+  labels:
+    app: apinode
+spec:
+  ports:
+    - name: naddr-31600
+      nodePort: 31600
+      port: 6000
+      protocol: TCP
+      targetPort: 6000
+  selector:
+    app: apinode
+  type: NodePort

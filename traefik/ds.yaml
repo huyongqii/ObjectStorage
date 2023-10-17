@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: traefik-ingress
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress
+spec:
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress
+  template: # pod的模板
+    metadata:
+      labels:
+        k8s-app: traefik-ingress
+        name: traefik-ingress
+    spec: # pod的规范
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60 # 优雅的关闭时间
+      containers:
+        - image: traefik:v1.7.2-alpine   #刚拉取的镜像
+          name: traefik-ingress
+          ports:
+            - name: controller
+              containerPort: 80       #把容器的80 端口调度到node 81 端口,81就是ingress controller 端口。
+              hostPort: 81
+            - name: admin-web
+              containerPort: 8080
+          securityContext: # 定义了容器的安全上下文配置，其中包括修改容器的能力，添加或删除容器的系统调用，以及设置特定的用户和组ID。
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+          args: # 启动参数，定义了传递给Traefik容器的命令行参数
+            - --server
+            - --kubernetes
+            - --logLevel=INFO
+            - --insecureskipverify=true # 禁用对Kubernetes API服务器证书的验证
+            - --kubernetes.endpoint=https://kubernetes.default.svc  # Kubernetes API服务器的地址，Traefik将使用此地址与Kubernetes进行通信
+            - --accesslog # 启用访问日志
+            - --accesslog.filepath=/var/log/traefik_access.log # 访问日志文件的路径
+            - --traefiklog # 启用Traefik日志
+            - --traefiklog.filepath=/var/log/traefik.log # Traefik日志文件的路径
+            - --metrics.prometheus # 启用Prometheus指标

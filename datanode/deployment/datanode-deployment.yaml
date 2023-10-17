@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datanode
+  namespace: dis-obj-storage
+  labels:
+    app: datanode
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: datanode
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: datanode
+    spec:
+      containers:
+        - name: datanode
+          imagePullPolicy: Always
+          image: huyongqi/datanodeserver:1.0.0-alpha1.0
+          ports:
+            - containerPort: 5000
+              name: naddr-31500
+              protocol: TCP
+          resources: { }
+          volumeMounts:
+            - mountPath: /sdp
+              name: datanode-persistent-storage
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODE_ADDR #节点地址[na]
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_PORT #节点端口[napt]
+              value: "5000"
+            - name: CLUSTER_ADDRS #METADATA地址
+              value: "metanode"
+            - name: CLUSTER_ADDRS_PORT #METADATA端口
+              value: "3000"  ####需要参考metanode-deployment.yaml#naddr-30000
+            - name: STORE_DATA_PATH #元数据存储[ms]
+              value: /sdp
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: { }
+      terminationGracePeriodSeconds: 30
+      serviceAccount: my-service-account
+      serviceAccountName: my-service-account
+      volumes:
+        - name: datanode-persistent-storage
+          emptyDir: { }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dis-obj-storage
+  name: datanode
+  labels:
+    app: datanode
+spec:
+  ports:
+    - name: naddr-31500
+      nodePort: 31500
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+  selector:
+    app: datanode
+  type: NodePort

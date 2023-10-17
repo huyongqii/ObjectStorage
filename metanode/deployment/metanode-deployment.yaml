@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metanode
+  namespace: dis-obj-storage
+  labels:
+    app: metanode
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: metanode
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: metanode
+    spec:
+      containers:
+        - name: metanode
+          imagePullPolicy: Always
+          image: huyongqi/metanodeserver:1.0.0-alpha1.0
+          ports:
+            - containerPort: 3000
+              name: naddr-30000
+              protocol: TCP
+            - containerPort: 10000
+              name: gaddr-31000
+              protocol: TCP
+          resources: { }
+          volumeMounts:
+            - mountPath: /metadata
+              name: metadata-persistent-storage
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SERVICE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_ADDR #节点地址[na]
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_PORT #节点端口[napt]
+              value: "3000"
+            - name: GOSSIP_NODE_PORT #gossip端口[gnapt]
+              value: "10000"
+            - name: CLUSTER_ADDRS #gossip集群地址[ca]
+              value: "metanode"
+            - name: METADATA_STORE #元数据存储[ms]
+              value: /metadata
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: { }
+      terminationGracePeriodSeconds: 30
+      serviceAccount: my-service-account
+      serviceAccountName: my-service-account
+      volumes:
+        - name: metadata-persistent-storage
+          emptyDir: { }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dis-obj-storage
+  name: metanode
+  labels:
+    app: metanode
+spec:
+  ports:
+    - name: naddr-30000 #节点自身的端口，需要提供给其他服务调用
+      nodePort: 30000
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    - name: gaddr-31000 #gossip协议端口使用，可以不需要提供对外服务
+      nodePort: 31000
+      port: 10000
+      protocol: TCP
+      targetPort: 10000
+  selector:
+    app: metanode
+  type: NodePort

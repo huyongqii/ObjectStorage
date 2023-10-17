@@ -1,0 +1,61 @@
+#定义nginx svc
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: dis-obj-storage
+  labels:
+    app: nginx
+spec:
+  type: NodePort
+  ports:
+    - name: naddr-18000
+      port: 80
+      targetPort: 80
+      nodePort: 18000
+      protocol: TCP
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: dis-obj-storage
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          imagePullPolicy: IfNotPresent
+          image: "" #nginx镜像
+          ports:
+            - containerPort: 80
+              name: naddr-18000
+              protocol: TCP
+          resources: { }
+          volumeMounts:
+            - mountPath: /usr/local/www
+              name: nginx-persistent-storage
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: { }
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: nginx-persistent-storage
+          emptyDir: { }

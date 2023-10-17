@@ -1,0 +1,201 @@
+{
+  "kind": "EndpointsList",
+  "apiVersion": "v1",
+  "metadata": {
+    "selfLink": "/api/v1/namespaces/dis-obj-storage/endpoints",
+    "resourceVersion": "3772935"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "apinode",
+        "namespace": "dis-obj-storage",
+        "selfLink": "/api/v1/namespaces/dis-obj-storage/endpoints/apinode",
+        "uid": "b440bdc4-4bef-4423-b22b-c2a6d4e442ba",
+        "resourceVersion": "3772926",
+        "creationTimestamp": "2021-02-07T05:09:10Z",
+        "labels": {
+          "app": "apinode"
+        },
+        "annotations": {
+          "endpoints.kubernetes.io/last-change-trigger-time": "2021-02-07T05:09:16Z"
+        }
+      },
+      "subsets": [
+        {
+          "addresses": [
+            {
+              "ip": "10.1.2.242",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "apinode-b9cd56d4d-tdd7m",
+                "uid": "52a177cc-ccda-46e1-986b-2bb6bbb78c13",
+                "resourceVersion": "3772915"
+              }
+            },
+            {
+              "ip": "10.1.2.243",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "apinode-b9cd56d4d-vkxcx",
+                "uid": "d0a82514-05ad-43c0-9ef0-566f9a326efb",
+                "resourceVersion": "3772902"
+              }
+            },
+            {
+              "ip": "10.1.2.244",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "apinode-b9cd56d4d-nz75h",
+                "uid": "7fd30233-b855-463d-b192-397153222393",
+                "resourceVersion": "3772924"
+              }
+            }
+          ],
+          "ports": [
+            {
+              "name": "naddr-31600",
+              "port": 6000,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "datanode",
+        "namespace": "dis-obj-storage",
+        "selfLink": "/api/v1/namespaces/dis-obj-storage/endpoints/datanode",
+        "uid": "27fd660f-3915-4370-98a6-67168b1b3585",
+        "resourceVersion": "3772929",
+        "creationTimestamp": "2021-02-07T05:09:09Z",
+        "labels": {
+          "app": "datanode"
+        },
+        "annotations": {
+          "endpoints.kubernetes.io/last-change-trigger-time": "2021-02-07T05:09:16Z"
+        }
+      },
+      "subsets": [
+        {
+          "addresses": [
+            {
+              "ip": "10.1.2.239",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "datanode-5c469f785-kc7hm",
+                "uid": "ab4d67f2-ec8f-4b0f-acab-90aace4ad432",
+                "resourceVersion": "3772906"
+              }
+            },
+            {
+              "ip": "10.1.2.240",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "datanode-5c469f785-56tm5",
+                "uid": "9a4eb230-50c2-4a3c-9c64-180196de6414",
+                "resourceVersion": "3772911"
+              }
+            },
+            {
+              "ip": "10.1.2.241",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "datanode-5c469f785-jftv2",
+                "uid": "90c4ea4b-6f03-4ef5-ad45-52c066814329",
+                "resourceVersion": "3772928"
+              }
+            }
+          ],
+          "ports": [
+            {
+              "name": "naddr-31500",
+              "port": 5000,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "metanode",
+        "namespace": "dis-obj-storage",
+        "selfLink": "/api/v1/namespaces/dis-obj-storage/endpoints/metanode",
+        "uid": "c9827cc3-fc5b-4fca-be9b-12bcb8e60fad",
+        "resourceVersion": "3772922",
+        "creationTimestamp": "2021-02-07T05:09:08Z",
+        "labels": {
+          "app": "metanode"
+        },
+        "annotations": {
+          "endpoints.kubernetes.io/last-change-trigger-time": "2021-02-07T05:09:16Z"
+        }
+      },
+      "subsets": [
+        {
+          "addresses": [
+            {
+              "ip": "10.1.2.236",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "metanode-6765cb6c87-cc28z",
+                "uid": "dc587676-b41d-4bcd-86ca-1aee9063e8ec",
+                "resourceVersion": "3772919"
+              }
+            },
+            {
+              "ip": "10.1.2.237",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "metanode-6765cb6c87-5vqn6",
+                "uid": "6fd67f97-2fd8-401f-bee7-0c2b0e51df19",
+                "resourceVersion": "3772896"
+              }
+            },
+            {
+              "ip": "10.1.2.238",
+              "nodeName": "docker-desktop",
+              "targetRef": {
+                "kind": "Pod",
+                "namespace": "dis-obj-storage",
+                "name": "metanode-6765cb6c87-z787q",
+                "uid": "b04dbc3b-e52e-4950-b144-5315595dab9d",
+                "resourceVersion": "3772890"
+              }
+            }
+          ],
+          "ports": [
+            {
+              "name": "naddr-30000",
+              "port": 3000,
+              "protocol": "TCP"
+            },
+            {
+              "name": "gaddr-31000",
+              "port": 10000,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
